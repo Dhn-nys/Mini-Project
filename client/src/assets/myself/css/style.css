@@ -1,0 +1,14 @@
+body{
+  background-color: #eceff4;
+  color: #2e3440;
+}
+.btn-transfer {
+  margin: 45px 0;
+  padding: 15px 30px;
+  background: linear-gradient(to right, #9EDA93, #22CBA8);
+  border-radius: 25px;
+  border: none;
+  color: #fff;
+  min-width: 60%;
+}
+

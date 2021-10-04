@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="apple-touch-icon" href="https://pokeapi.co/favicon.ico" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Pokemon</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <script>
+      fetch('https://pokeapi.co/api/v2/pokemon?limit=9')
+        .then(
+          function(response) {
+            if(response.status != 200){
+              console.log('Oops..' + response.status)
+              return
+            }
+
+            response.json().then(function(data) {
+              const pokemons = data.results
+              pokemons.forEach(pokemon => {
+                document.getElementById('pokemonList')
+                .insertAdjacentHTML('beforeend',
+                `
+                <div class="col">
+              <div class="card">
+                <div class="card-body text-center">
+                  <img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.url[34]}.svg' style="width: 120px;" class='card-img-top' alt='${pokemon.name}' type="button" data-bs-toggle="modal" data-bs-target="#details" onclick='detail("${pokemon.url}")'>
+                  <h5 class="card-title text-uppercase fw-bold">${pokemon.name}</h5>
+                  <div class="d-grid gap-2">
+                    <button class="btn btn-transfer" type="button" data-bs-toggle="modal" data-bs-target="#takes" onclick='take("${pokemon.url}")'>Take</button>
+                 </div>
+                </div>
+              </div>
+            </div>
+                `)
+              })
+            })
+          }
+        )
+        .catch(function (err){
+          console.log(err)
+        })
+
+        function detail(url){
+          fetch(url).then(function(response){
+            response.json().then(function(pokemon){
+
+              document.getElementById('detail').innerHTML = ''
+
+              document.getElementById('detail')
+              .insertAdjacentHTML('beforeend',
+              `
+              <div class="container">
+                <div class="row">
+                  <div class="col text-center">
+                    <img src='${pokemon.sprites.other.dream_world.front_default}' class='img-fluid rounded-start' alt='${pokemon.name}'>
+                  </div>
+                  <div class="col">
+                    <div class="card-body">
+                      <h5 class="card-title text-uppercase fw-bold">${pokemon.name}</h5>
+                      <p class="card-text">Height : ${pokemon.height}m
+                        <br>Weight : ${pokemon.weight} kg
+                        <br>Element : ${pokemon.types[0].type.name}
+                        <br>HP : ${pokemon.stats[0].base_stat}
+                        <br>XP : ${pokemon.base_experience}</p>
+                    </div>
+                  </div>
+                  
+                  <hr>
+
+                <div class="row text-center">
+
+                  <div class="col">
+                    <p class="card-text">Default</p>
+                    <img src='${pokemon.sprites.front_default}' class='img-fluid rounded-start' alt='${pokemon.name}'>
+                  </div>
+
+                  <div class="col">
+                    <p class="card-text">Front</p>
+                    <img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${pokemon.id}.gif' class='img-fluid rounded-start' alt='${pokemon.name}'>
+                  </div>
+
+                  <div class="col">
+                    <p class="card-text">Back</p>
+                    <img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/back/${pokemon.id}.gif' class='img-fluid rounded-start' alt='${pokemon.name}'>
+                  </div>
+                  
+              </div>
+            </div>
+              `)
+            })
+          })
+        }
+
+        function take(url){
+          fetch(url).then(function(response){
+            response.json().then(function(pokemon){
+
+              document.getElementById('take')
+              .insertAdjacentHTML('beforeend',
+              `
+              <a class="list-group-item list-group-item-action">
+                <button a="#" class='btn btn-danger' onclick='removePoke(this)'> Delete </button>
+                <div class="row">
+                  <div class="col-sm-3 text-center">
+                    <img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${pokemon.id}.gif' class='img-fluid rounded-start' alt='${pokemon.name}'>
+                    <div class='py-3'>
+                    <p class="text-uppercase" id="rename">Name : <input onclick='toggle(this)' type='text' class='text-uppercase form-control' value="${pokemon.name}-${Math.floor((Math.random() * 9) + 1)}"></input></p>
+                    </div>
+                    </div>
+                  
+                  <div class="col-sm-9">
+                    <div class="row">
+                      <div class="col-8 col-sm-6">
+                      <p class="text-uppercase">Type : ${pokemon.name}</p>
+                      <p class="text-uppercase">HP : ${Math.floor((Math.random() * pokemon.stats[0].base_stat) + 1)}/${pokemon.stats[0].base_stat}</p>
+                      <p class="text-uppercase">Element : ${pokemon.types[0].type.name}</p>
+                      </div>
+                      
+                      <div class="col-8 col-sm-6">
+                      <p class="text-uppercase">Height : ${pokemon.height}m</p>
+                      <p class="text-uppercase">Weight : ${pokemon.weight} kg</p>
+                      <p class="text-uppercase">XP : ${pokemon.base_experience}</p>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </a>
+              `)
+            })
+          })
+        }
+
+        function removePoke(el){
+        el.parentElement.remove()
+      }
+      function toggle(el){
+        el.classList.toggle('text-success')
+      }
+
+    </script>
+  </body>
+</html>
